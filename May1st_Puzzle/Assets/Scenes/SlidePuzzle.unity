@@ -243,7 +243,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 322038748}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnPointClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 322038747}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &375781346
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +521,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 562505222}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnBlockSelected
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 562505221}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &562505222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -892,7 +916,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1335674012}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnPointClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1335674011}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1408207366
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,7 +1049,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1408207368}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnPointClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1408207367}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1628173682
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,7 +1258,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1637581980}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnPointClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1637581979}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1661900244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,7 +1353,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1661900247}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnBlockSelected
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1661900246}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1661900247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1362,15 +1434,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points:
-  - {fileID: 1335674012}
-  - {fileID: 1408207368}
-  - {fileID: 1637581980}
-  - {fileID: 2033451651}
-  - {fileID: 322038748}
-  blockTop: {fileID: 562505219}
-  blockBottom: {fileID: 1661900244}
-  moveSpeed: 1.5
-  curveHeight: -100
+  - {fileID: 1335674011}
+  - {fileID: 1408207367}
+  - {fileID: 1637581979}
+  - {fileID: 2033451650}
+  - {fileID: 322038747}
+  blocks:
+  - {fileID: 1661900246}
+  - {fileID: 562505221}
+  centerPoint: {fileID: 322038747}
+  defaultColor: {r: 0, g: 0, b: 1, a: 1}
+  selectedColor: {r: 1, g: 0, b: 0, a: 1}
+  moveSpeed: 1
+  curveRadiusMultiplier: 1.35
 --- !u!4 &1767048545
 Transform:
   m_ObjectHideFlags: 0
@@ -1506,4 +1582,16 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2033451651}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1767048544}
+        m_TargetAssemblyTypeName: SlideButtonControl, Assembly-CSharp
+        m_MethodName: OnPointClicked
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2033451650}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

@@ -7,88 +7,140 @@ using UnityEngine.UI;
 public class SlideButtonControl : MonoBehaviour
 {
     [SerializeField]
-    public Image[] points;         // 점 이미지 배열
+    public Transform[] points;          // 동서남북 점들 (이미지로 표시)
+    public Button[] blocks;             // 블록 버튼 (총 2개)
 
-    public GameObject blockTop;    // 위쪽 블록
-    public GameObject blockBottom; // 아래쪽 블록
-    public float moveSpeed = 5f; // 이동 속도
-    public float curveHeight = 2f; // 곡선 높이 (Sin 함수로 조정)
+    public Transform centerPoint;       // 중심점
+    public Color defaultColor = Color.blue;  // 기본 블록 색상
+    public Color selectedColor = Color.red;  // 선택 및 이동 중 블록 색상
+    public float moveSpeed = 2f;        // 이동 속도
+    public float curveRadiusMultiplier = 1.5f; // 곡선 반지름 배율
 
-    private Button selectedBlock;  // 선택된 블록
-    private Color normalColor = Color.blue; 
-    private Color selectedColor = Color.red; // 선택된 색상
-    private bool isMoving = false; // 현재 이동 중인지 확인
-    private Vector3 targetPosition; // 이동 목표 위치
+    private Button selectedBlock = null; // 현재 선택된 블록
+    private bool isMoving = false;       // 블록 이동 중 여부
 
     void Start()
     {
-        // 각 블록에 버튼 이벤트 등록
-        blockTop.GetComponent<Button>().onClick.AddListener(() => SelectBlock(blockTop.GetComponent<Button>()));
-        blockBottom.GetComponent<Button>().onClick.AddListener(() => SelectBlock(blockBottom.GetComponent<Button>()));
-
-        // 각 점에 클릭 이벤트 등록
-        foreach (Image point in points)
+        foreach (var block in blocks)
         {
-            point.GetComponent<Button>().onClick.AddListener(() => MoveSelectedBlock(point.transform.position));
+            SetBlockColor(block, defaultColor);
+            block.onClick.AddListener(() => OnBlockSelected(block));
         }
     }
 
-    // 블록 선택 로직
-    void SelectBlock(Button blockButton)
+    public void OnBlockSelected(Button block)
     {
+        if (isMoving) return;
+
         if (selectedBlock != null)
         {
-            selectedBlock.GetComponent<Image>().color = normalColor; // 이전 블록의 색상 초기화
+            SetBlockColor(selectedBlock, defaultColor);
         }
 
-        selectedBlock = blockButton;
-        selectedBlock.GetComponent<Image>().color = selectedColor; // 선택된 블록 색상 변경
+        selectedBlock = block;
+        SetBlockColor(selectedBlock, selectedColor);
     }
 
-    // 선택된 블록을 특정 위치로 곡선 이동
-    void MoveSelectedBlock(Vector3 target)
+    public void OnPointClicked(Transform targetPoint)
     {
-        if (selectedBlock != null && !isMoving)
+        if (selectedBlock == null || isMoving) return;
+
+        Transform currentPoint = GetCurrentPoint(selectedBlock.transform);
+        if (currentPoint != null)
         {
-            StartCoroutine(MoveAlongSineCurve(selectedBlock.gameObject, target));
+            if (ShouldMoveStraight(currentPoint, targetPoint))
+            {
+                StartCoroutine(MoveStraight(currentPoint, targetPoint));
+            }
+            else
+            {
+                StartCoroutine(MoveAlongCurve(currentPoint, targetPoint));
+            }
         }
     }
 
-    // 코루틴: 블록을 Sin 곡선으로 이동
-    IEnumerator MoveAlongSineCurve(GameObject block, Vector3 target)
+    private Transform GetCurrentPoint(Transform blockTransform)
+    {
+        foreach (Transform point in points)
+        {
+            if (Vector3.Distance(blockTransform.position, point.position) < 0.1f)
+            {
+                return point;
+            }
+        }
+        return null;
+    }
+
+    private bool ShouldMoveStraight(Transform from, Transform to)
+    {
+        return from == centerPoint || to == centerPoint ||
+               Mathf.Approximately(from.position.x, to.position.x) ||
+               Mathf.Approximately(from.position.y, to.position.y);
+    }
+
+    private void SetBlockColor(Button block, Color color)
+    {
+        ColorBlock colors = block.colors;
+        colors.normalColor = color;
+        block.colors = colors;
+    }
+
+    IEnumerator MoveStraight(Transform from, Transform to)
     {
         isMoving = true;
 
-        Vector3 startPoint = block.transform.position; // 시작점
-        float distance = Vector3.Distance(startPoint, target); // 두 점 사이 거리
         float t = 0f;
+        Vector3 startPoint = from.position;
+        Vector3 endPoint = to.position;
 
         while (t < 1f)
         {
-            t += Time.deltaTime / moveSpeed; // 이동 속도 조정
-            // 직선 경로 계산
-            Vector3 linearPosition = Vector3.Lerp(startPoint, target, t);
-            // 곡선 높이 추가 (Sin 함수 기반)
-            float sineOffset = Mathf.Sin(t * Mathf.PI) * curveHeight; // Sin 곡선으로 높이 조정
-            linearPosition.y += sineOffset; // y축에 곡선 오프셋 추가
-            // 블록 위치 업데이트
-            block.transform.position = linearPosition;
+            t += Time.deltaTime * moveSpeed;
+            selectedBlock.transform.position = Vector3.Lerp(startPoint, endPoint, t);
+            yield return null;
+        }
+
+        selectedBlock.transform.position = endPoint;
+        SetBlockColor(selectedBlock, defaultColor);
+        selectedBlock = null;
+        isMoving = false;
+    }
+
+    IEnumerator MoveAlongCurve(Transform from, Transform to)
+    {
+        isMoving = true;
+
+        float t = 0f;
+        Vector3 startPoint = from.position;
+        Vector3 endPoint = to.position;
+
+        // 곡선 제어점 계산
+        Vector3 directionFromCenterToStart = (startPoint - centerPoint.position).normalized;
+        Vector3 directionFromCenterToEnd = (endPoint - centerPoint.position).normalized;
+
+        // 중심점을 기준으로 제어점을 더 바깥쪽으로 설정
+        Vector3 controlPoint = centerPoint.position +
+                               (directionFromCenterToStart + directionFromCenterToEnd).normalized *
+                               Vector3.Distance(centerPoint.position, startPoint) * curveRadiusMultiplier;
+
+        // 곡선 경로 디버깅 라인
+        Debug.DrawLine(startPoint, controlPoint, Color.green, 2f);
+        Debug.DrawLine(controlPoint, endPoint, Color.green, 2f);
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * moveSpeed;
+
+            Vector3 m1 = Vector3.Lerp(startPoint, controlPoint, t);
+            Vector3 m2 = Vector3.Lerp(controlPoint, endPoint, t);
+            selectedBlock.transform.position = Vector3.Lerp(m1, m2, t);
 
             yield return null;
         }
 
-        block.transform.position = target; // 최종 위치 보정
+        selectedBlock.transform.position = endPoint;
+        SetBlockColor(selectedBlock, defaultColor);
+        selectedBlock = null;
         isMoving = false;
-        DeselectBlock(); // 블록 도착 후 선택 초기화
-    }
-
-    // 블록 선택 초기화
-    void DeselectBlock()
-    {
-        if (selectedBlock != null)
-        {
-            selectedBlock.GetComponent<Image>().color = normalColor; // 선택된 블록의 색상 초기화
-            selectedBlock = null; // 선택된 블록 초기화
-        }
     }
 }
